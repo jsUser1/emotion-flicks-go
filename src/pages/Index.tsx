@@ -66,14 +66,15 @@ const Index = () => {
 
       <main>
         <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 -z-20 opacity-40">
-            <div className="grid h-full w-full grid-cols-3 gap-2 blur-sm">
+          <div className="pointer-events-none absolute inset-0 -z-20 opacity-80 saturate-150">
+            <div className="grid h-full w-full grid-cols-3 gap-2 blur-sm md:blur">
               {[happyPoster, romanticPoster, energeticPoster, darkPoster, adventurousPoster, calmPoster].map((src, i) => (
                 <img key={i} src={src} alt="" aria-hidden="true" className="h-full w-full object-cover" loading="lazy" />
               ))}
             </div>
           </div>
-          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(1200px_500px_at_50%_-10%,hsl(var(--brand-600)/0.25),transparent_70%),radial-gradient(800px_300px_at_20%_20%,hsl(var(--brand)/0.15),transparent_60%),radial-gradient(800px_300px_at_80%_30%,hsl(var(--accent-600)/0.15),transparent_60%)]"/>
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(1200px_500px_at_50%_-10%,hsl(var(--primary)/0.25),transparent_70%),radial-gradient(800px_300px_at_20%_20%,hsl(var(--accent)/0.15),transparent_60%),radial-gradient(800px_300px_at_80%_30%,hsl(var(--secondary)/0.15),transparent_60%)]"/>
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-background/10 via-background/40 to-background" />
           <div className="container mx-auto px-4 py-16 sm:py-20">
             <h1 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight sm:text-5xl">
               Mood-based Movie Recommendations
