@@ -1,12 +1,16 @@
 import { Movie } from "@/data/movies";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
+
 
 type Props = {
   movie: Movie;
+  onWatch?: (movie: Movie) => void;
 };
 
-export default function MovieCard({ movie }: Props) {
+export default function MovieCard({ movie, onWatch }: Props) {
   return (
     <article className="group">
       <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
@@ -25,6 +29,22 @@ export default function MovieCard({ movie }: Props) {
               </Badge>
             ))}
           </div>
+          {onWatch && (
+            <Button
+              size="sm"
+              variant="secondary"
+              className="absolute right-3 top-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onWatch(movie);
+              }}
+              aria-label={`Mark ${movie.title} as watched`}
+            >
+              <Check className="mr-1 h-4 w-4" />
+              Watched
+            </Button>
+          )}
         </div>
         <CardContent className="p-4">
           <h3 className="text-base font-semibold leading-tight">{movie.title}</h3>
