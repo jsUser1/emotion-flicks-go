@@ -39,14 +39,14 @@ export default function AdvancedFilters({ value, onChange }: Props) {
           <div>
             <label className="text-sm text-muted-foreground">Genre</label>
             <Select
-              value={value.genres?.[0] ?? ""}
-              onValueChange={(v) => onChange({ ...value, genres: v ? [v] : undefined })}
+              value={value.genres?.[0] ?? "any"}
+              onValueChange={(v) => onChange({ ...value, genres: v === "any" ? undefined : [v] })}
             >
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Any genre" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Any</SelectItem>
+                <SelectItem value="any">Any</SelectItem>
                 {GENRES.map((g) => (
                   <SelectItem key={g} value={g}>{g}</SelectItem>
                 ))}
