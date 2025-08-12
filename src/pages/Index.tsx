@@ -7,6 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useRecommender } from "@/hooks/use-recommender";
 import AdvancedFilters from "@/components/mood/AdvancedFilters";
 import { filterMoviesByQuery, type FilterCriteria } from "@/lib/search";
+import happyPoster from "@/assets/posters/happy.jpg";
+import darkPoster from "@/assets/posters/dark.jpg";
+import energeticPoster from "@/assets/posters/energetic.jpg";
+import romanticPoster from "@/assets/posters/romantic.jpg";
+import adventurousPoster from "@/assets/posters/adventurous.jpg";
+import calmPoster from "@/assets/posters/calm.jpg";
 
 const Index = () => {
   const [query, setQuery] = useState("");
@@ -39,8 +45,13 @@ const Index = () => {
   );
 
   useEffect(() => {
-    setResults(movies.slice(0, 12));
-  }, []);
+    if (!query && Object.keys(filters).length === 0) {
+      setResults(movies.slice(0, 12));
+      return;
+    }
+    const list = filterMoviesByQuery(query, movies, filters);
+    setResults(list);
+  }, [query, filters]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,6 +66,13 @@ const Index = () => {
 
       <main>
         <section className="relative overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 -z-20 opacity-40">
+            <div className="grid h-full w-full grid-cols-3 gap-2 blur-sm">
+              {[happyPoster, romanticPoster, energeticPoster, darkPoster, adventurousPoster, calmPoster].map((src, i) => (
+                <img key={i} src={src} alt="" aria-hidden="true" className="h-full w-full object-cover" loading="lazy" />
+              ))}
+            </div>
+          </div>
           <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(1200px_500px_at_50%_-10%,hsl(var(--brand-600)/0.25),transparent_70%),radial-gradient(800px_300px_at_20%_20%,hsl(var(--brand)/0.15),transparent_60%),radial-gradient(800px_300px_at_80%_30%,hsl(var(--accent-600)/0.15),transparent_60%)]"/>
           <div className="container mx-auto px-4 py-16 sm:py-20">
             <h1 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight sm:text-5xl">
@@ -70,12 +88,14 @@ const Index = () => {
           </div>
         </section>
 
+        <AdvancedFilters value={filters} onChange={setFilters} />
+
         {recommended.length > 0 && query === "" && (
           <section className="container mx-auto px-4 pb-8">
             <h2 className="mb-4 text-xl font-semibold">Recommended for You</h2>
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {recommended.map((m) => (
-                <MovieCard key={m.id} movie={m} onWatch={handleWatch} />
+                <MovieCard key={m.id} movie={m} onWatch={handleWatch} onView={handleView} />
               ))}
             </div>
           </section>
@@ -85,7 +105,7 @@ const Index = () => {
           <h2 className="mb-4 text-xl font-semibold">{heading}</h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {results.map((m) => (
-              <MovieCard key={m.id} movie={m} onWatch={handleWatch} />
+              <MovieCard key={m.id} movie={m} onWatch={handleWatch} onView={handleView} />
             ))}
           </div>
         </section>
