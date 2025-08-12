@@ -85,6 +85,26 @@ export const useRecommender = () => {
     (allMovies: Movie[], excludeWatched = true, limit = 12): Movie[] => {
       if (!history.totalViews) return [];
 
+      const now = Date.now();
+      const HALF_LIFE_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+      const idMap = new Map(allMovies.map((m) => [m.id, m] as const));
+
+      // Build recency weights per mood/genre from viewed history
+      const moodRecency: Record<string, number> = {};
+      const genreRecency: Record<string, number> = {};
+      Object.entries(history.lastViewedAt).forEach(([id, ts]) => {
+        const m = idMap.get(id);
+        if (!m) return;
+        const dt = Math.max(0, now - ts);
+        const recency = Math.exp(-dt / HALF_LIFE_MS); // 1.0 if just viewed, decays over time
+        m.moodTags.forEach((t) => {
+          moodRecency[t] = (moodRecency[t] || 0) + recency;
+        });
+        m.genres.forEach((g) => {
+          genreRecency[g] = (genreRecency[g] || 0) + recency * 0.7;
+        });
+      });
+
       const scored = allMovies
         .filter((m) => !excludeWatched || !history.viewsById[m.id])
         .map((m) => {
@@ -92,10 +112,12 @@ export const useRecommender = () => {
           // Mood tags weighted higher
           m.moodTags.forEach((t) => {
             score += (history.moodWeights[t] || 0) * 1.2;
+            score += (moodRecency[t] || 0) * 1.0; // recency boost for recently viewed similar moods
           });
           // Genres
           m.genres.forEach((g) => {
             score += (history.genreWeights[g] || 0) * 0.8;
+            score += (genreRecency[g] || 0) * 0.6; // recency boost for similar genres
           });
           // Slight rating bias
           score += (m.rating || 0) * 0.1;

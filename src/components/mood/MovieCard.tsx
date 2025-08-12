@@ -8,12 +8,24 @@ import { Check } from "lucide-react";
 type Props = {
   movie: Movie;
   onWatch?: (movie: Movie) => void;
+  onView?: (movie: Movie) => void;
 };
 
-export default function MovieCard({ movie, onWatch }: Props) {
+export default function MovieCard({ movie, onWatch, onView }: Props) {
   return (
     <article className="group">
-      <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg">
+      <Card
+        className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg"
+        role={onView ? "button" : undefined}
+        tabIndex={onView ? 0 : -1}
+        onClick={() => onView?.(movie)}
+        onKeyDown={(e) => {
+          if ((e.key === "Enter" || e.key === " ") && onView) {
+            e.preventDefault();
+            onView(movie);
+          }
+        }}
+      >
         <div className="relative aspect-[2/3] overflow-hidden">
           <img
             src={movie.poster}

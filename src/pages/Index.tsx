@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import MoodSearch from "@/components/mood/MoodSearch";
 import MovieCard from "@/components/mood/MovieCard";
-import { filterMoviesByMood, movies } from "@/data/movies";
+import { movies } from "@/data/movies";
 import type { Movie } from "@/data/movies";
 import { useToast } from "@/hooks/use-toast";
 import { useRecommender } from "@/hooks/use-recommender";
+import AdvancedFilters from "@/components/mood/AdvancedFilters";
+import { filterMoviesByQuery, type FilterCriteria } from "@/lib/search";
 
 const Index = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState(movies.slice(0, 12));
+  const [filters, setFilters] = useState<FilterCriteria>({});
   const { toast } = useToast();
 
   const { history, recordView, getRecommendations } = useRecommender();
@@ -16,14 +19,17 @@ const Index = () => {
     recordView(m);
     toast({ title: "Added to history", description: `Marked "${m.title}" as watched.` });
   };
+  const handleView = (m: Movie) => {
+    recordView(m);
+  };
   const recommended = useMemo(() => getRecommendations(movies, true, 8), [getRecommendations, movies, history]);
 
   const onSearch = (value: string) => {
     setQuery(value);
-    const list = filterMoviesByMood(value);
+    const list = filterMoviesByQuery(value, movies, filters);
     setResults(list);
     if (value && list.length === 0) {
-      toast({ title: "No matches", description: `No movies found for "${value}" mood.` });
+      toast({ title: "No matches", description: `No movies found for "${value}".` });
     }
   };
 
